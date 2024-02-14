@@ -1,22 +1,20 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-import UserService from "App/Services/User.service";
-import UserValidator from "App/Validators/UserValidator";
 import Logger from "@ioc:Adonis/Core/Logger";
-import { inject } from "@adonisjs/fold";
+import Hash from "@ioc:Adonis/Core/Hash";
+import User from "../../Models/User";
+import UserValidator from "../../Validators/UserValidator";
 
-@inject()
 export default class UsersController extends UserValidator {
-  constructor(private readonly user: UserService) {
-    super();
-  }
-
   public async store({ request, response }: HttpContextContract) {
     const payload = await request.validate({
       schema: this.v_create,
     });
     try {
-      const newUser = await this.user.registre(payload);
-      response.created({ status: true, data: newUser });
+      const newUser = await User.create(payload);
+      response.created({
+        status: true,
+        data: newUser,
+      });
     } catch (error) {
       Logger.error(`Error: ${error.message}`);
       return response.expectationFailed({
@@ -28,37 +26,56 @@ export default class UsersController extends UserValidator {
   }
 
   public async login({ request, response, auth }: HttpContextContract) {
-    const payload = request.validate({
+    //1
+
+    const { email, password } = await request.validate({
       schema: this.v_sign,
     });
 
-    try {
-      const email = (await payload).email;
-      const password = (await payload).password;
+    //2
 
-      const token = await auth.use("api").attempt(email, password, {
-        expiresIn: "10 days",
-      });
+    try {
+      const userFind = await User.query().where("email", email).first();
+      if (!userFind) {
+        return response.unprocessableEntity({
+          errors: [
+            { rule: "-", field: "email", message: `Identifiants inccorect.` },
+          ],
+        });
+      }
+
+      //3
+
+      if (!(await Hash.verify(userFind.password, password))) {
+        return response.unprocessableEntity({
+          errors: [
+            {
+              rule: "-",
+              field: "password",
+              message: `Identifiants inccorect.`,
+            },
+          ],
+        });
+      }
+
+      //4
+
+      const token = await auth
+        .use("api")
+        .attempt(email, password, { expiresIn: "3 days" });
 
       return response.created({
         status: true,
-        token,
-        data: payload,
+        token: token,
+        user: userFind,
       });
     } catch (error) {
-      Logger.error(error);
+      Logger.error(`Error: ${error.message}`);
       return response.expectationFailed({
         status: false,
+        data: null,
         message: error.message,
       });
     }
-  }
-
-  public async logout({ auth }: HttpContextContract) {
-    await auth.use("api").revoke();
-    return {
-      revoked: true,
-      logout: "successfuly",
-    };
   }
 }

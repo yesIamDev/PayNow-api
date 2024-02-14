@@ -1,10 +1,7 @@
 import { schema, CustomMessages, rules } from "@ioc:Adonis/Core/Validator";
-import GeneralCaseValidator from "./GeneralCaseValidator";
 
-export default class UserValidator extends GeneralCaseValidator {
-  constructor() {
-    super();
-  }
+
+export default class UserValidator {
 
   public v_create = schema.create({
     username: schema.string(),
@@ -12,10 +9,20 @@ export default class UserValidator extends GeneralCaseValidator {
     password: schema.string([rules.minLength(8), rules.confirmed()])
   })
 
+  public v_sign = schema.create({
+    email: schema.string([rules.email()]),
+    password: schema.string([rules.minLength(8)]),
+  });
+
   public v_update = schema.create({
     username: schema.string(),
     email: schema.string({ trim: true }, [rules.email()]),
   })
+
+  public v_change_psswd = schema.create({
+    oldPassword: schema.string(),
+    password: schema.string([rules.minLength(4), rules.confirmed()]),
+  });
 
   public messages: CustomMessages = {};
 }
