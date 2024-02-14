@@ -6,7 +6,7 @@ export default class UserValidator {
   public v_create = schema.create({
     username: schema.string(),
     email: schema.string([rules.email(), rules.unique({ table: 'users', column: 'email' })]),
-    password: schema.string([rules.minLength(8), rules.confirmed()])
+    password: schema.string([rules.minLength(8)])
   })
 
   public v_sign = schema.create({

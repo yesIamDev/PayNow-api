@@ -1,13 +1,34 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { DateTime } from "luxon";
+import { BaseModel, column, beforeSave } from "@ioc:Adonis/Lucid/Orm";
+import generate from "../Utils/Generator";
 
 export default class Teacher extends BaseModel {
   @column({ isPrimary: true })
-  public id: number
+  public id: string;
+
+  @column()
+  public name: string;
+
+  @column()
+  public lastname: string;
+
+  @column()
+  public sex: string;
+
+  @column()
+  public age: number;
+
+  @column()
+  public salary: number;
 
   @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime
+  public createdAt: DateTime;
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public updatedAt: DateTime
+  public updatedAt: DateTime;
+
+  @beforeSave()
+  public static async hashPassword(teacher: Teacher) {
+    teacher.id = await generate.id();
+  }
 }
