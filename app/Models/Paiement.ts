@@ -7,6 +7,9 @@ export default class Paiement extends BaseModel {
   public id: string
 
   @column()
+  public teacher_id: string
+
+  @column()
   public description: string
 
   @column()

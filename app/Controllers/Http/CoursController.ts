@@ -31,7 +31,7 @@ export default class CoursController extends CourValidator {
     });
 
     //2
-    const teacherFind = await Teacher.query().where("teacherId", payload.teacher_id);
+    const teacherFind = await Teacher.query().where("id", payload.teacher_id);
 
     if (!teacherFind)
       return response.json({
