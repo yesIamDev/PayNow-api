@@ -7,5 +7,5 @@ Route.group(() => {
     Route.put("/teachers/:id", "TeachersController.update");
     Route.delete("/teachers/:id", "TeachersController.destroy");
     
-  }).middleware('auth:user');
-});
+  })
+}).prefix('api/v1');

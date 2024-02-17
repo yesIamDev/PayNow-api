@@ -1,6 +1,14 @@
 import { DateTime } from "luxon";
-import { BaseModel, column, beforeSave } from "@ioc:Adonis/Lucid/Orm";
+import {
+  BaseModel,
+  column,
+  beforeSave,
+  HasMany,
+  hasMany,
+} from "@ioc:Adonis/Lucid/Orm";
 import generate from "../Utils/Generator";
+import Cour from "./Cour";
+import Paiement from "./Paiement";
 
 export default class Teacher extends BaseModel {
   @column({ isPrimary: true })
@@ -20,6 +28,12 @@ export default class Teacher extends BaseModel {
 
   @column()
   public salary: number;
+
+  @hasMany(() => Cour)
+  public cours: HasMany<typeof Cour>
+
+  @hasMany(() => Paiement)
+  public paiements: HasMany<typeof Paiement>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime;
