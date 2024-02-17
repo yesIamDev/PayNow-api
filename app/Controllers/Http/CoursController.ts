@@ -24,14 +24,14 @@ export default class CoursController extends CourValidator {
     const payload = await request.validate({
       schema: this.v_create,
       data: {
-        id: request.param("id"),
+        teacher_id: request.param("teacherId"),
         title: request.input("title"),
         description: request.input("description"),
       },
     });
 
     //2
-    const teacherFind = await Teacher.query().where("id", payload.id);
+    const teacherFind = await Teacher.query().where("teacherId", payload.teacher_id);
 
     if (!teacherFind)
       return response.json({

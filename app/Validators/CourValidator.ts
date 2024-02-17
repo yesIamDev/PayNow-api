@@ -7,7 +7,7 @@ export default class CourValidator {
   });
 
   public v_create = schema.create({
-    id: schema.string([rules.uuid()]),
+    teacher_id: schema.string([rules.uuid()]),
     title: schema.string(),
     description: schema.string()
   })

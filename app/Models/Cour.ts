@@ -7,6 +7,9 @@ export default class Cour extends BaseModel {
   public id: string
 
   @column()
+  public teacher_id: string
+
+  @column()
   public title: string
 
   @column()
