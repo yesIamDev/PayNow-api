@@ -7,7 +7,27 @@ export default class TeachersController extends TeacherValidator {
   public async index({ response }: HttpContextContract) {
     try {
       const data = await Teacher.query().orderBy("created_at", "desc");
-      return response.json({ data: data });
+      return response.json(data);
+    } catch (error) {
+      Logger.error(`Error: ${error.message}`);
+      return response.expectationFailed({
+        status: false,
+        data: null,
+        message: error.message,
+      });
+    }
+  }
+
+  public async getOneById({ request, response }: HttpContextContract) {
+    //1
+    const { id } = await request.validate({
+      schema: this.v_id_param,
+      data: { id: request.param("id") },
+    });
+
+    try {
+      const teacher = await Teacher.find(id);
+      return response.json(teacher);
     } catch (error) {
       Logger.error(`Error: ${error.message}`);
       return response.expectationFailed({

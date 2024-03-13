@@ -38,16 +38,17 @@ export default class PaiementsController extends PaiementValidator {
     const teacherFind = await Teacher.query()
       .where("id", payload.teacher_id)
       .first();
+      
     if (teacherFind) {
-      if (payload.amount != teacherFind.salary) {
-        response.json({
+      if (payload.amount !== teacherFind.salary) {
+        return response.json({
           status: false,
           message:
             "Le montant du paiement doit correspondre au salaire fixer initialement pour l'enseigant !",
         });
       }
     } else {
-      response.json({
+      return response.json({
         status: false,
         message: "Aucun enseignant retrouver pour cet identifiant!",
       });
