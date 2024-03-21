@@ -1,4 +1,5 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import commonQuery from "../../Utils/commonQuery";
 import Logger from "@ioc:Adonis/Core/Logger";
 import TeacherValidator from "../../Validators/TeacherValidator";
 import Teacher from "../../Models/Teacher";
@@ -42,6 +43,12 @@ export default class TeachersController extends TeacherValidator {
     const payload = await request.validate({
       schema: this.v_create,
     });
+
+    if(await commonQuery.testIfUnique({
+      LucidModel:Teacher, 
+      column: "name",
+      value: payload.name
+    })) throw "Ce NOM existe deja au sein du systeme!"
 
     try {
       const newTeacher = await Teacher.create(payload);
